@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MicroMaster – Microplastics IoT Monitor</title>
+  <meta name="description" content="MicroMaster: Real-time microplastics monitoring in water bodies using IoT sensors. Live dashboard, alerts, analytics, and sensor mapping." />
+  <link rel="stylesheet" href="index.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="bg-grid"></div>
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+
+<!-- ── Demo Mode Banner ───────────────────────────────────── -->
+<div class="demo-banner" id="demo-banner">
+  <span class="demo-pulse"></span>
+  <strong>🧪 Live Simulation Mode</strong> — Real-time data engine active · IoT hardware integration ready · 12 virtual sensor nodes streaming
+  <button class="demo-close" onclick="document.getElementById('demo-banner').style.display='none'" title="Dismiss">✕</button>
+</div>
+
+<!-- ── Navbar ─────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">💧</div>
+    <span class="nav-logo-text">MicroMaster</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#dashboard" class="active" id="nav-dashboard">
+      <span>⊞</span> Dashboard
+    </a></li>
+    <li><a href="#analytics" id="nav-analytics">
+      <span>📈</span> Analytics
+    </a></li>
+    <li><a href="#alerts-section" id="nav-alerts">
+      <span>🔔</span> Alerts
+    </a></li>
+    <li><a href="#sensors" id="nav-sensors">
+      <span>📡</span> Sensors
+    </a></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="export-btn" onclick="exportData()" title="Export CSV Report" data-tooltip="Export Data">
+      📥 Export Data
+    </button>
+    <div class="nav-status-badge">
+      <span class="status-dot"></span>
+      Live Monitoring
+    </div>
+    <button class="notif-btn" id="notif-btn" title="Notifications" data-tooltip="Notifications">
+      🔔
+      <span class="notif-badge" id="notif-count">3</span>
+    </button>
+    <div class="avatar" title="Admin" data-tooltip="Dr. A Kumar">AK</div>
+  </div>
+</nav>
+
+<!-- ── Page Wrapper ────────────────────────────────────────── -->
+<div class="page-wrapper">
+<main class="main-content">
+
+  <!-- ── Hero ───────────────────────────────────────────────── -->
+  <section class="hero" id="dashboard">
+    <div class="hero-waves">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+        <path class="wave-path" fill="url(#wg)" d="
+          M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z
+          M1440,40 C1200,80 960,0 720,40 C480,80 240,0 0,40 L0,80 L1440,80 Z"/>
+        <path class="wave-path2" fill="rgba(0,229,255,0.4)" d="
+          M0,50 C360,20 720,80 1080,50 C1260,35 1360,60 1440,50 L1440,80 L0,80 Z"/>
+        <defs>
+          <linearGradient id="wg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#00e5ff" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#00bfa5" stop-opacity="0.5"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="hero-tag">🌊 IoT Water Quality Network · Active</div>
+    <h1>
+      Monitoring <span>Microplastics</span><br/>in Real-Time
+    </h1>
+    <p class="hero-subtitle">
+      MicroMaster connects to distributed IoT sensors across water bodies, delivering continuous microplastic concentration data, quality metrics, and early-warning alerts.
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="stat-sensors">12</span>
+        <span class="hero-stat-label">Active Sensors</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="stat-readings">4,291</span>
+        <span class="hero-stat-label">Readings Today</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val cyan" id="stat-alerts">3</span>
+        <span class="hero-stat-label">Active Alerts</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" id="stat-uptime">99.4%</span>
+        <span class="hero-stat-label">Network Uptime</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Scenario Simulator (Demo Features) ────────────────── -->
+  <section class="demo-controls" id="demo-controls">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon">🕹️</div>
+        Scenario Simulator (Presentation Mode)
+      </div>
+      <div class="section-sub">Trigger live events to demonstrate system responsiveness</div>
+    </div>
+    <div class="demo-buttons">
+      <button onclick="triggerScenario('spill')" class="btn-demo btn-spill">
+        <span>🏭</span> Simulate Industrial Spill
+      </button>
+      <button onclick="triggerScenario('monsoon')" class="btn-demo btn-monsoon">
+        <span>⛈️</span> Simulate Monsoon Runoff
+      </button>
+      <button onclick="triggerScenario('offline')" class="btn-demo btn-offline">
+        <span>🔌</span> Drop Sensor Connection
+      </button>
+      <button onclick="triggerScenario('normal')" class="btn-demo btn-normal">
+        <span>✅</span> Restore Normal Ops
+      </button>
+    </div>
+  </section>
+
+  <!-- ── KPI Cards ──────────────────────────────────────────── -->
+  <section>
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon">📊</div>
+        Live Sensor Readings
+      </div>
+      <div class="section-sub" id="last-updated">Updating every 2s</div>
+    </div>
+
+    <div class="kpi-grid">
+      <!-- Micro concentration -->
+      <div class="kpi-card" style="animation-delay:0.05s">
+        <div class="kpi-header">
+          <span class="kpi-label">Micro Concentration</span>
+          <div class="kpi-icon bg-cyan"><span class="cyan">🔬</span></div>
+        </div>
+        <div class="kpi-value cyan" id="kpi-conc">--</div>
+        <span class="kpi-unit"> PPB</span>
+        <div class="kpi-change" id="kpi-conc-chg">⬆ Loading…</div>
+      </div>
+
+      <!-- pH Level -->
+      <div class="kpi-card" style="animation-delay:0.10s">
+        <div class="kpi-header">
+          <span class="kpi-label">pH Level</span>
+          <div class="kpi-icon bg-teal"><span class="teal">⚗️</span></div>
+        </div>
+        <div class="kpi-value teal" id="kpi-ph">--</div>
+        <div class="kpi-change" id="kpi-ph-chg">⬆ Loading…</div>
+      </div>
+
+      <!-- Turbidity -->
+      <div class="kpi-card" style="animation-delay:0.15s">
+        <div class="kpi-header">
+          <span class="kpi-label">Turbidity</span>
+          <div class="kpi-icon bg-orange"><span class="orange">🌫️</span></div>
+        </div>
+        <div class="kpi-value orange" id="kpi-turb">--</div>
+        <span class="kpi-unit"> NTU</span>
+        <div class="kpi-change" id="kpi-turb-chg">⬆ Loading…</div>
+      </div>
+
+      <!-- Temperature -->
+      <div class="kpi-card" style="animation-delay:0.20s">
+        <div class="kpi-header">
+          <span class="kpi-label">Water Temp</span>
+          <div class="kpi-icon bg-purple"><span class="purple">🌡️</span></div>
+        </div>
+        <div class="kpi-value purple" id="kpi-temp">--</div>
+        <span class="kpi-unit"> °C</span>
+        <div class="kpi-change" id="kpi-temp-chg">⬆ Loading…</div>
+      </div>
+
+      <!-- Particle Count -->
+      <div class="kpi-card" style="animation-delay:0.25s">
+        <div class="kpi-header">
+          <span class="kpi-label">Particle Count</span>
+          <div class="kpi-icon bg-red"><span class="red">🔴</span></div>
+        </div>
+        <div class="kpi-value red" id="kpi-particles">--</div>
+        <span class="kpi-unit"> /L</span>
+        <div class="kpi-change" id="kpi-particles-chg">⬆ Loading…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Charts ─────────────────────────────────────────────── -->
+  <section>
+    <div class="charts-row">
+      <!-- Live Line Chart -->
+      <div class="chart-card">
+        <div class="chart-title">📈 Live Concentration Stream</div>
+        <div class="chart-subtitle">Microplastic concentration over last 30 data points (PPB)</div>
+        <div class="chart-wrap">
+          <canvas id="liveChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Gauge Bars -->
+      <div class="chart-card">
+        <div class="chart-title">⚖️ Water Quality Gauges</div>
+        <div class="chart-subtitle">Current parameter levels vs safe thresholds</div>
+        <div class="gauge-grid" id="gauge-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Map + Alerts ───────────────────────────────────────── -->
+  <section class="map-alerts-row" id="alerts-section">
+    <!-- Sensor Map -->
+    <div class="map-card">
+      <div class="section-header" style="margin-bottom:16px">
+        <div class="section-title">
+          <div class="icon">🗺️</div>
+          Sensor Network Map
+        </div>
+        <span class="section-sub">Ganges River Basin — Zone A</span>
+      </div>
+      <div class="sensor-map" id="sensor-map">
+        <span class="map-label">Live Node Status</span>
+        <svg class="water-body" viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
+          <!-- River shape -->
+          <defs>
+            <linearGradient id="riverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.06"/>
+              <stop offset="100%" stop-color="#00bfa5" stop-opacity="0.08"/>
+            </linearGradient>
+          </defs>
+          <path d="M0,100 Q150,60 300,120 Q450,180 600,130 L600,200 Q450,250 300,190 Q150,130 0,170 Z"
+                fill="url(#riverGrad)" stroke="rgba(0,229,255,0.15)" stroke-width="1"/>
+          <path d="M0,110 Q150,70 300,130 Q450,190 600,140"
+                fill="none" stroke="rgba(0,229,255,0.1)" stroke-width="1.5" stroke-dasharray="6,4"/>
+        </svg>
+        <!-- Nodes added by JS -->
+      </div>
+    </div>
+
+    <!-- Alerts Panel -->
+    <div class="alerts-card">
+      <div class="section-header" style="margin-bottom:16px">
+        <div class="section-title">
+          <div class="icon">🚨</div>
+          Alert Feed
+        </div>
+        <button class="refresh-btn" onclick="clearAlerts()">✕ Clear</button>
+      </div>
+      <div class="alerts-list" id="alerts-list">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Analytics ──────────────────────────────────────────── -->
+  <section id="analytics">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon">📉</div>
+        Analytics
+      </div>
+      <button class="refresh-btn" id="analytics-refresh">↻ Refresh</button>
+    </div>
+    <div class="analytics-row">
+      <!-- Bar chart -->
+      <div class="chart-card">
+        <div class="chart-title">📊 Average Concentration per Sensor</div>
+        <div class="chart-subtitle">7-day rolling average (PPB)</div>
+        <div class="chart-wrap">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Safety Meter -->
+      <div class="safety-card chart-card">
+        <div class="chart-title" style="width:100%; margin-bottom:0">🛡️ Water Safety Index</div>
+        <div class="chart-subtitle" style="width:100%; margin-bottom:0">Composite score across all sensors</div>
+        <div class="safety-ring">
+          <svg viewBox="0 0 160 160">
+            <circle class="safety-ring-bg" cx="80" cy="80" r="70"
+              fill="none" stroke-width="10"/>
+            <circle class="safety-ring-fill" id="safety-fill" cx="80" cy="80" r="70"
+              fill="none" stroke-width="10"
+              stroke="url(#safetyGrad)"/>
+            <defs>
+              <linearGradient id="safetyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#00e5ff"/>
+                <stop offset="100%" stop-color="#00e676"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="safety-center">
+            <div class="safety-pct cyan" id="safety-pct">--</div>
+            <div class="safety-label">Safety Score</div>
+          </div>
+        </div>
+        <div class="safety-status" id="safety-status">Calculating…</div>
+        <div style="margin-top:16px; width:100%">
+          <div class="gauge-card" style="margin-bottom:8px">
+            <div class="gauge-header">
+              <span class="gauge-name">WHO Threshold (50 PPB)</span>
+              <span class="gauge-val green" id="who-val">OK</span>
+            </div>
+            <div class="gauge-bar">
+              <div class="gauge-fill" id="who-fill" style="width:0%; background: var(--accent-green)"></div>
+            </div>
+          </div>
+          <div class="gauge-card">
+            <div class="gauge-header">
+              <span class="gauge-name">EPA Standard (30 PPB)</span>
+              <span class="gauge-val" id="epa-val">OK</span>
+            </div>
+            <div class="gauge-bar">
+              <div class="gauge-fill" id="epa-fill" style="width:0%; background: var(--accent-teal)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Sensor Table ────────────────────────────────────────── -->
+  <section id="sensors">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon">📡</div>
+        Sensor Status Table
+      </div>
+      <button class="refresh-btn" onclick="renderSensorTable()">↻ Refresh</button>
+    </div>
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Sensor ID</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Concentration (PPB)</th>
+            <th>pH</th>
+            <th>Turbidity (NTU)</th>
+            <th>Battery</th>
+            <th>Last Reading</th>
+          </tr>
+        </thead>
+        <tbody id="sensor-tbody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>MicroMaster © 2026 · Built with ❤️ for clean water · Powered by <span>IoT + AI</span> · Real-time microplastics detection</p>
+</footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
